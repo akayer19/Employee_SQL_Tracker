@@ -42,17 +42,17 @@ const mainMenu = async () => {
 const viewDepartments = async () => {
     const [rows] = await db.query('SELECT * FROM department');
     console.table(rows);
-    maintMenu();
+    mainMenu();
 }
 const viewRoles = async () => {
     const [rows] = await db.query('SELECT * FROM role');
     console.table(rows);
-    maintMenu();
+    mainMenu();
 }
 const viewEmployees = async () => {
     const [rows] = await db.query('SELECT * FROM employee');
     console.table(rows);
-    maintMenu();
+    mainMenu();
 }
 const addDepartment = async () => {
     const { name } = await inquirer.prompt([
@@ -65,7 +65,7 @@ const addDepartment = async () => {
 
     await db.query('INSERT INTO department (name) VALUES (?)', [name]);
     console.log('Department added!');
-    maintMenu();
+    mainMenu();
 }
 const addRole = async () => {
     const departments = await db.query('SELECT * FROM department');
@@ -93,7 +93,7 @@ const addRole = async () => {
 
     await db.query('INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)', [title, salary, department_id]);
     console.log('Role added!');
-    maintMenu();
+    mainMenu();
 }   
 const addEmployee = async () => {
     const roles = await db.query('SELECT * FROM role');
@@ -131,7 +131,7 @@ const addEmployee = async () => {
 
     await db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [first_name, last_name, role_id, manager_id]);
     console.log('Employee added!');
-    maintMenu();
+    mainMenu();
 }
 const updateEmployeeRole = async () => {
     const employees = await db.query('SELECT * FROM employee');
@@ -141,25 +141,38 @@ const updateEmployeeRole = async () => {
             type: 'list',
             name: 'employee_id',
             message: 'Select the employee to update:',
-            choices: employees[0].map(employee => ({
-                name: `${employee.first_name} ${employee.last_name}`,
-                value: employee.id,
-            })),
+            choices: [
+                ...employees[0].map(employee => ({
+                    name: `${employee.first_name} ${employee.last_name}`,
+                    value: employee.id,
+                })),
+                { name: 'Cancel', value: 'CANCEL' }, // Add a Cancel option here
+            ],
         },
         {
             type: 'list',
             name: 'role_id',
             message: 'Select the new role for the employee:',
-            choices: roles[0].map(role => ({
-                name: role.title,
-                value: role.id,
-            })),
+            choices: [
+                ...roles[0].map(role => ({
+                    name: role.title,
+                    value: role.id,
+                })),
+                { name: 'Cancel', value: 'CANCEL' }, // Add a Cancel option here
+            ],
         },
     ]);
 
+    // Check if the user selected the "Cancel" option
+    if (employee_id === 'CANCEL' || role_id === 'CANCEL') {
+        console.log('Operation cancelled.');
+        return mainMenu(); // Return to the main menu
+    }
+
     await db.query('UPDATE employee SET role_id = ? WHERE id = ?', [role_id, employee_id]);
     console.log('Employee role updated!');
-    maintMenu();
-}
+    mainMenu();
+};
+
 mainMenu();
 
