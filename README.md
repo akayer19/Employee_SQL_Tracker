@@ -1,7 +1,7 @@
-# Employee SQL Tracker
+# Employee SQL Manager
 
 ## Description
-The Employee SQL Tracker is a command-line application that serves as a powerful tool for managing a company's internal employee database. Leveraging the capabilities of Node.js, Inquirer for interactive prompts, and MySQL for database management, this application simplifies the process of organizing and maintaining essential employee information. Designed with ease of use in mind, it provides a straightforward interface for performing various human resources and management tasks directly from the terminal.
+The Employee SQL Manager is a command-line application that serves as a powerful tool for managing a company's internal employee database. Leveraging the capabilities of Node.js, Inquirer for interactive prompts, and MySQL for database management, this application simplifies the process of organizing and maintaining essential employee information. Designed with ease of use in mind, it provides a straightforward interface for performing various human resources and management tasks directly from the terminal.
 
 ## Table of Contents
 - [Installation](#installation)
