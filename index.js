@@ -168,94 +168,80 @@ const addRole = async () => {
         console.error('An error occurred while adding the role:', error);
     }
 
-    mainMenu(); // Return to main menu
+    // mainMenu(); // Return to main menu
 };
 
-
-
-
 const addEmployee = async () => {
-    const { firstName } = await inquirer.prompt([
+    const roles = await Role.getAllRoles();
+    const roleChoices = roles.map(role => ({ name: role.title, value: role.id }));
+
+    const employees = await Employee.getAllEmployees();
+    const employeeChoices = employees.map(emp => ({ name: emp.name, value: emp.id }));
+    employeeChoices.unshift({ name: 'None', value: null });
+
+    const answers = await inquirer.prompt([
         {
             type: 'input',
             name: 'firstName',
-            message: 'Enter the employee\'s first name (or type "cancel" to cancel):',
+            message: "Enter the employee's first name:",
         },
-    ]);
-
-    if (!firstName || firstName.toLowerCase() === 'cancel') {
-        console.log('Cancelled!');
-        return; // Return without calling mainMenu()
-    }
-
-    const { lastName } = await inquirer.prompt([
         {
             type: 'input',
             name: 'lastName',
-            message: 'Enter the employee\'s last name:',
+            message: "Enter the employee's last name:",
         },
-    ]);
-
-    if (!lastName || lastName.toLowerCase() === 'cancel') {
-        console.log('Cancelled!');
-        return; // Return without calling mainMenu()
-    }
-
-    const rolesForEmployee = await Role.getAllRoles();
-    const employeesForManager = await Employee.getAllEmployeesInfo();
-    const { roleId, managerId } = await inquirer.prompt([
         {
             type: 'list',
             name: 'roleId',
-            message: 'Select the role for the employee:',
-            choices: rolesForEmployee.map(role => ({ name: role.title, value: role.id })),
+            message: "Select the employee's role:",
+            choices: roleChoices,
         },
         {
             type: 'list',
             name: 'managerId',
-            message: 'Select the manager for the employee:',
-            choices: [{ name: 'None', value: null }].concat(
-                employeesForManager.map(emp => ({ name: `${emp.first_name} ${emp.last_name}`, value: emp.id }))
-            ),
+            message: "Select the employee's manager:",
+            choices: employeeChoices,
         },
     ]);
 
-    if (!roleId || roleId.toLowerCase() === 'cancel' || !managerId || managerId.toLowerCase() === 'cancel') {
-        console.log('Cancelled!');
-        return; // Return without calling mainMenu()
+    if (answers.firstName.toLowerCase() === 'cancel' || answers.lastName.toLowerCase() === 'cancel') {
+        console.log('Operation cancelled.');
+        return;
     }
 
-    try {
-        await Employee.addEmployee(firstName, lastName, roleId, managerId);
-        console.log(`Employee ${firstName} ${lastName} added!`);
-    } catch (error) {
-        console.error('An error occurred while adding employee:', error);
-    }
+    await Employee.addEmployee(answers.firstName, answers.lastName, answers.roleId, answers.managerId === null ? null : answers.managerId);
+    console.log(`${answers.firstName} ${answers.lastName} added as an employee.`);
 };
-
 
 const updateEmployeeRole = async () => {
     try {
+        // Fetch all employees and roles for the prompts
         const employeesToUpdate = await Employee.getAllEmployeesInfo();
         const newRoles = await Role.getAllRoles();
 
-        const { action } = await inquirer.prompt([
+        // Prompt to select an employee to update
+        const { employeeId } = await inquirer.prompt([
             {
                 type: 'list',
-                name: 'action',
-                message: 'Select an option:',
+                name: 'employeeId', // Use 'employeeId' instead of 'action' for clarity
+                message: 'Select an employee to update their role:',
                 choices: [
-                    ...employeesToUpdate.map(emp => ({ name: `Update role for ${emp.first_name} ${emp.last_name}`, value: emp.id })),
+                    ...employeesToUpdate.map(emp => ({ 
+                        name: `${emp.first_name} ${emp.last_name}`, 
+                        value: emp.employee_id  // Ensure you use the correct property here
+                    })),
                     { name: 'Cancel', value: 'cancel' }
                 ],
             },
         ]);
 
-        if (action === 'cancel') {
+        // Handle cancellation
+        if (employeeId === 'cancel') {
             console.log('Operation cancelled.');
             return;
         }
 
+        // Prompt to select the new role for the employee
         const { newRoleId } = await inquirer.prompt([
             {
                 type: 'list',
@@ -265,7 +251,8 @@ const updateEmployeeRole = async () => {
             },
         ]);
 
-        await Employee.updateEmployeeRole(action, newRoleId);
+        // Perform the update operation
+        await Employee.updateEmployeeRole(employeeId, newRoleId);
         console.log(`Employee's role updated successfully!`);
     } catch (error) {
         console.error('An error occurred while updating employee role:', error);
