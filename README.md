@@ -36,8 +36,8 @@ Contributions are welcome. Please open an issue first to discuss what you would 
 Local testing
 
 ## Screenshot
-![Screenshot](./utils/screenshot.png)
-![Screenshot](./utils/screenshot.png)
+![Screenshot](https://github.com/akayer19/Employee_SQL_Tracker/blob/main/utils/mainMenu.png)
+![Screenshot](https://github.com/akayer19/Employee_SQL_Tracker/blob/main/utils/tables.png)
 
 
 ## Questions
