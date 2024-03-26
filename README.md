@@ -36,6 +36,9 @@ Contributions are welcome. Please open an issue first to discuss what you would 
 Local testing
 
 ## Screenshot
+
+Here is a link to a walkthrough! - https://drive.google.com/file/d/1V-VS0OKHZy4isbZOfPpdoxpxSibPNXPZ/view
+
 ![Screenshot](https://github.com/akayer19/Employee_SQL_Tracker/blob/main/utils/mainMenu.png)
 ![Screenshot](https://github.com/akayer19/Employee_SQL_Tracker/blob/main/utils/tables.png)
 
